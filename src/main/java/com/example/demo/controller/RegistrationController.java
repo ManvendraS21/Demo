@@ -1,9 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.WriterRepository;
+import com.example.demo.repository.WriterRepository;
 import com.example.demo.model.Writer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Quotes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .quote-item {
+            background-color: #e2e8f0;
+            border-left: 5px solid #4299e1;
+        }
+        .btn-primary {
+            background-color: #4299e1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #3182ce;
+        }
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        input[type="text"], textarea {
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="container">
+    <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">My Quotes Collection</h1>
+
+    <!-- Add New Quote Form -->
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Add a New Quote</h2>
+        <!-- Form for adding a quote. Submits directly to the POST endpoint. -->
+        <form th:action="@{/user/quotes}" method="post" class="space-y-4">
+            <div>
+                <label for="quoteContent" class="block text-gray-700 text-sm font-bold mb-2">Quote Content:</label>
+                <textarea id="quoteContent" name="quote" rows="3" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter quote content..." required></textarea>
+            </div>
+            <div>
+                <label for="author" class="block text-gray-700 text-sm font-bold mb-2">Author:</label>
+                <input type="text" id="author" name="author" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter author's name" required/>
+            </div>
+            <button type="submit" class="btn-primary w-full">Add Quote</button>
+        </form>
+    </div>
+
+    <!-- List of Existing Quotes -->
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Existing Quotes</h2>
+        <ul id="quotesList" class="space-y-4">
+            <li th:each="quote : ${quotes}" class="quote-item p-4 rounded-lg flex justify-between items-center shadow-sm">
+                <div>
+                    <p class="text-gray-800 text-lg italic">"<span th:text="${quote.quote}">Quote content goes here</span>"</p>
+                    <p class="text-gray-600 text-md mt-1">- <span th:text="${quote.author}">Author Name</span></p>
+                    <a th:href="@{/user/quotes/{id}(id=${quote.id})}" class="text-blue-600 hover:underline text-sm mt-2 block">View Details</a>
+                </div>
+                <!-- Form for deleting a quote. Submits directly to the DELETE endpoint. -->
+                <form th:action="@{/admin/quotes/{id}(id=${quote.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn-danger" onclick="return confirm('Are you sure you want to delete this quote?');">Delete</button>
+                </form>
+            </li>
+        </ul>
+        <div th:if="${#lists.isEmpty(quotes)}" class="text-center text-gray-500 mt-4">
+            No quotes available yet. Add one above!
+        </div>
+    </div>
+</div>
+</body>
+</html>

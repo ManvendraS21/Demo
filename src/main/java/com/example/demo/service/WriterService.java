@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.demo.service;
 
+import com.example.demo.repository.WriterRepository;
 import com.example.demo.model.Writer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
