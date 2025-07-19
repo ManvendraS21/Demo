@@ -1,7 +1,8 @@
-package com.example.demo;
+package com.example.demo.helper;
 
 
 import com.example.demo.model.Quotes;
+import com.example.demo.repository.QuotesRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

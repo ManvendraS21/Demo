@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.demo.service;
 
+import com.example.demo.repository.QuotesRepository;
 import com.example.demo.model.Quotes;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
