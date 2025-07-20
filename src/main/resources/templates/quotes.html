@@ -56,16 +56,47 @@
             border-color: #4299e1;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
         }
+        .pagination {
+            display: flex;
+            flex-wrap: wrap; /* Allows items to wrap to the next line */
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 0.5rem; /* Space between pagination items */
+        }
+        .pagination a, .pagination span {
+            padding: 0.5rem 1rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #4299e1;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            white-space: nowrap; /* Prevent "First Page" from breaking */
+        }
+        .pagination a:hover {
+            background-color: #e2e8f0;
+        }
+        .pagination .current-page {
+            background-color: #4299e1;
+            color: white;
+            border-color: #4299e1;
+            font-weight: bold;
+        }
+        .pagination .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+            background-color: #f7fafc; /* Lighter background for disabled */
+            color: #a0aec0; /* Lighter text for disabled */
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 <div class="container">
     <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">My Quotes Collection</h1>
 
-    <!-- Add New Quote Form -->
     <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
         <h2 class="text-2xl font-semibold text-gray-700 mb-4">Add a New Quote</h2>
-        <!-- Form for adding a quote. Submits directly to the POST endpoint. -->
         <form th:action="@{/user/quotes}" method="post" class="space-y-4">
             <div>
                 <label for="quoteContent" class="block text-gray-700 text-sm font-bold mb-2">Quote Content:</label>
@@ -79,9 +110,8 @@
         </form>
     </div>
 
-    <!-- List of Existing Quotes -->
     <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Existing Quotes</h2>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Existing Quotes (<span th:text="${totalItems}"></span>)</h2>
         <ul id="quotesList" class="space-y-4">
             <li th:each="quote : ${quotes}" class="quote-item p-4 rounded-lg flex justify-between items-center shadow-sm">
                 <div>
@@ -89,7 +119,6 @@
                     <p class="text-gray-600 text-md mt-1">- <span th:text="${quote.author}">Author Name</span></p>
                     <a th:href="@{/user/quotes/{id}(id=${quote.id})}" class="text-blue-600 hover:underline text-sm mt-2 block">View Details</a>
                 </div>
-                <!-- Form for deleting a quote. Submits directly to the DELETE endpoint. -->
                 <form th:action="@{/admin/quotes/{id}(id=${quote.id})}" method="post">
                     <input type="hidden" name="_method" value="delete" />
                     <button type="submit" class="btn-danger" onclick="return confirm('Are you sure you want to delete this quote?');">Delete</button>
@@ -98,6 +127,29 @@
         </ul>
         <div th:if="${#lists.isEmpty(quotes)}" class="text-center text-gray-500 mt-4">
             No quotes available yet. Add one above!
+        </div>
+
+        <div th:if="${totalPages > 1}" class="pagination">
+            <a th:classappend="${currentPage == 0 ? 'disabled' : ''}"
+               th:href="@{/quotes(page=0, size=${pageSize}, sortBy=${sortField}, sortDir=${sortDirection})}">First Page</a>
+
+            <a th:classappend="${!hasPrevious ? 'disabled' : ''}"
+               th:href="@{/quotes(page=${currentPage - 1}, size=${pageSize}, sortBy=${sortField}, sortDir=${sortDirection})}">Previous</a>
+
+            <th:block th:with="startPage=${T(java.lang.Math).max(0, currentPage - 2)}, endPage=${T(java.lang.Math).min(totalPages - 1, currentPage + 2)}">
+                <span th:if="${startPage > 0}">...</span> <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                    <a th:if="${i != currentPage}"
+                       th:href="@{/quotes(page=${i}, size=${pageSize}, sortBy=${sortField}, sortDir=${sortDirection})}"
+                       th:text="${i + 1}">1</a>
+                    <span th:if="${i == currentPage}" th:text="${i + 1}" class="current-page">1</span>
+                </span>
+                <span th:if="${endPage < totalPages - 1}">...</span> </th:block>
+
+            <a th:classappend="${!hasNext ? 'disabled' : ''}"
+               th:href="@{/quotes(page=${currentPage + 1}, size=${pageSize}, sortBy=${sortField}, sortDir=${sortDirection})}">Next</a>
+
+            <a th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}"
+               th:href="@{/quotes(page=${totalPages - 1}, size=${pageSize}, sortBy=${sortField}, sortDir=${sortDirection})}">Last Page</a>
         </div>
     </div>
 </div>
