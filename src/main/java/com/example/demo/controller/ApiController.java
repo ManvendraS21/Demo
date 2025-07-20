@@ -4,13 +4,14 @@ package com.example.demo.controller;
 import com.example.demo.service.QuoteService;
 import com.example.demo.model.Quotes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -22,9 +23,34 @@ class ApiController {
     }
 
     @GetMapping({"/quotes","/user/quotes"})
-    public String showingAllQuotes(Model model){
-        List<Quotes> quotes = (List<Quotes>) quoteService.findAll();
-        model.addAttribute("quotes",quotes);
+    public String showingAllQuotes(Model model,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "date") String sortBy, // New: for sorting
+                                   @RequestParam(defaultValue = "desc") String sortDir) { // New: for sort direction
+
+        // Create a Pageable object with pagination and sorting information
+        // PageRequest.of(page, size, Sort.by(Sort.Direction.ASC/DESC, sortByField))
+        Pageable pageable;
+        if (sortDir.equalsIgnoreCase("asc")) {
+            pageable = PageRequest.of(page, size, org.springframework.data.domain.Sort.by(sortBy).ascending());
+        } else {
+            pageable = PageRequest.of(page, size, org.springframework.data.domain.Sort.by(sortBy).descending());
+        }
+
+
+        Page<Quotes> quotesPage = quoteService.findAll(pageable);
+        model.addAttribute("quotes", quotesPage.getContent()); // Get the list of quotes for the current page
+        model.addAttribute("currentPage", quotesPage.getNumber());
+        model.addAttribute("totalPages", quotesPage.getTotalPages());
+        model.addAttribute("totalItems", quotesPage.getTotalElements());
+        model.addAttribute("pageSize", quotesPage.getSize());
+        model.addAttribute("hasPrevious", quotesPage.hasPrevious());
+        model.addAttribute("hasNext", quotesPage.hasNext());
+        model.addAttribute("sortField", sortBy);
+        model.addAttribute("sortDirection", sortDir);
+
+
         return "quotes";
     }
 

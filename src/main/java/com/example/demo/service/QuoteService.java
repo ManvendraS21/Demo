@@ -5,10 +5,12 @@ import com.example.demo.model.Quotes;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +26,8 @@ public class QuoteService {
     }
 
 //    @Cacheable(value = "quotes")
-    public Iterable<Quotes> findAll(){
-        return (List<Quotes>) quotesRepository.findAll();
+    public Page<Quotes> findAll(Pageable pageable){
+        return quotesRepository.findAll(pageable);
     }
 
     @Cacheable(value = "quotes", key = "#id")
