@@ -66,7 +66,11 @@
     <div class="bg-white p-6 rounded-xl shadow-lg mb-8 quote-display">
         <p class="text-gray-800 text-2xl italic mb-4">"<span th:text="${quote.quote}">Quote content goes here</span>"</p>
         <p class="text-gray-600 text-lg">- <span th:text="${quote.author}">Author Name</span></p>
-        <p class="text-gray-500 text-sm mt-2">Added on: <span th:text="${#temporals.format(quote.date, 'dd MMMM yyyy')}">Date</span></p>
+<!--        need to fix the date bug that's not allowing me to store in redis in localDate format than formating into thymeleaf-->
+<!--        <p class="text-gray-500 text-sm mt-2">-->
+<!--            Added on:-->
+<!--            <span th:text="${quote.date != null ? #temporals.format(quote.date, 'dd MMMM yyyy') : 'N/A'}">Date</span>-->
+<!--        </p>-->
     </div>
 
     <!-- Edit Quote Form -->
